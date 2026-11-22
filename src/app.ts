@@ -12,6 +12,7 @@ import {
 import { createDevWorkflowRouter } from './routes/dev-workflow.routes';
 import { createHealthRouter } from './routes/health.routes';
 import { createHotelRouter } from './routes/hotel.routes';
+import { createRootRouter } from './routes/root.routes';
 import type { HealthService } from './services/health.service';
 import type { HotelService } from './services/hotel.service';
 import type { HotelWorkflowExecutor } from './temporal/client';
@@ -37,6 +38,7 @@ export function createApp(config: AppConfig, deps: AppDependencies = {}): Expres
   app.use(requestLogger);
   app.use(express.json({ limit: '10kb' }));
 
+  app.use(createRootRouter());
   app.use(createHealthRouter(deps.healthService));
 
   // Mock third-party suppliers. In a real deployment these would be external services.

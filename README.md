@@ -281,6 +281,7 @@ Returns a structured JSON health report with latency metrics for all dependencie
 
 | Method | Path                | Description                                                       |
 | ------ | ------------------- | ----------------------------------------------------------------- |
+| `GET`  | `/`                 | Root service info (name, status, deployment, docs, key endpoints) |
 | `GET`  | `/health/live`      | Lightweight liveness probe (200 OK if event loop is alive)        |
 | `GET`  | `/health/ready`     | Readiness probe (200 if Redis OR Temporal+Worker are operational) |
 | `GET`  | `/supplierA/hotels` | Mock upstream Supplier A inventory endpoint                       |

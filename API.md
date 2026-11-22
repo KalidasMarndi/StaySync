@@ -23,6 +23,34 @@ All responses from `/api/hotels` include custom metadata headers:
 
 ---
 
+## 0. Root Service Information
+
+Returns top-level metadata, deployment status, documentation links, and essential API endpoints.
+
+- **Method:** `GET`
+- **Path:** `/`
+
+### Example Request
+
+```bash
+curl -i "https://staysync-ad96.onrender.com/"
+```
+
+### Example Response (`200 OK`)
+
+```json
+{
+  "name": "StaySync",
+  "description": "Hotel Offer Orchestrator API",
+  "status": "operational",
+  "deployment": "Render",
+  "documentation": "https://github.com/KalidasMarndi/StaySync#readme",
+  "endpoints": ["/health", "/health/live", "/health/ready", "/api/hotels?city=delhi"]
+}
+```
+
+---
+
 ## 1. Search Hotels
 
 Retrieves aggregated, deduplicated hotel offers for a target city, ordered ascending by price.

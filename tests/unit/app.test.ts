@@ -10,6 +10,20 @@ import { DependencyUnavailableError, ValidationError } from '../../src/utils/err
 describe('createApp', () => {
   const app = createApp(loadConfig({ NODE_ENV: 'test' }));
 
+  it('serves the root service info on GET /', async () => {
+    const res = await request(app).get('/');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({
+      name: 'StaySync',
+      description: 'Hotel Offer Orchestrator API',
+      status: 'operational',
+      deployment: 'Render',
+      documentation: 'https://github.com/KalidasMarndi/StaySync#readme',
+      endpoints: ['/health', '/health/live', '/health/ready', '/api/hotels?city=delhi'],
+    });
+  });
+
   it('returns a JSON 404 for unknown routes', async () => {
     const res = await request(app).get('/does-not-exist?secret=1');
 
