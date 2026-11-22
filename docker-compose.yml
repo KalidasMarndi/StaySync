@@ -1,0 +1,116 @@
+# StaySync — complete stack:  docker compose up --build
+#
+#   api      Express API + mock suppliers   → http://localhost:4000
+#   worker   Temporal worker (same image)
+#   temporal Temporal dev server (SQLite)   → Web UI http://localhost:8233
+#   redis    Redis 7.4 (AOF persistence)
+#
+# Containers reach each other by service name (redis, temporal, api) — never localhost.
+# Values are written out on purpose (no ${VAR} substitution): Compose would otherwise
+# read your local .env, whose localhost/development values are wrong inside Docker.
+# For the failure-simulation demo, add docker-compose.dev.yml (see README).
+
+name: staysync
+
+x-app-environment: &app-environment
+  NODE_ENV: production
+  LOG_LEVEL: info
+  PORT: '4000'
+  REDIS_HOST: redis
+  REDIS_PORT: '6379'
+  REDIS_DB: '0'
+  TEMPORAL_ADDRESS: temporal:7233
+  TEMPORAL_NAMESPACE: default
+  TEMPORAL_TASK_QUEUE: hotel-offers
+  # The mock suppliers live in the api container; the worker calls them over the network.
+  SUPPLIER_A_BASE_URL: http://api:4000/supplierA
+  SUPPLIER_B_BASE_URL: http://api:4000/supplierB
+  SUPPLIER_A_ENABLED: 'true'
+  SUPPLIER_B_ENABLED: 'true'
+  SUPPLIER_LATENCY_MS: '0'
+  SUPPLIER_REQUEST_TIMEOUT_MS: '3000'
+  ENABLE_FAILURE_SIMULATION: 'false'
+  CACHE_TTL_SECONDS: '300'
+  DEGRADED_CACHE_TTL_SECONDS: '30'
+
+services:
+  redis:
+    image: redis:7.4-alpine
+    command: ['redis-server', '--appendonly', 'yes']
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+    restart: unless-stopped
+
+  temporal:
+    image: temporalio/temporal:1.10.1
+    command:
+      - server
+      - start-dev
+      - --ip
+      - 0.0.0.0
+      - --db-filename
+      - /home/temporal/temporal.db
+    # Mounted on the image user's home so the volume is writable by uid 1000 (temporal).
+    volumes:
+      - temporal-data:/home/temporal
+    ports:
+      - '8233:8233' # Temporal Web UI
+    healthcheck:
+      test: ['CMD', 'temporal', 'operator', 'cluster', 'health', '--address', '127.0.0.1:7233']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    restart: unless-stopped
+
+  api:
+    build: .
+    image: staysync:latest
+    init: true # tini as PID 1: forwards SIGTERM to node, reaps zombies
+    environment: *app-environment
+    ports:
+      - '4000:4000'
+    depends_on:
+      redis:
+        condition: service_healthy
+      temporal:
+        condition: service_healthy
+    healthcheck:
+      # Liveness only: the API must stay up (and serve what it can) when a dependency is down.
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:4000/health/live').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    stop_grace_period: 15s # graceful shutdown waits up to 10s for in-flight requests
+    restart: unless-stopped
+
+  worker:
+    build: .
+    image: staysync:latest
+    init: true
+    command: ['node', 'dist/temporal/worker.js']
+    environment: *app-environment
+    depends_on:
+      temporal:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      api: # hosts the supplier endpoints the activities call
+        condition: service_healthy
+    stop_grace_period: 15s # worker drains in-flight tasks for up to 10s
+    restart: unless-stopped
+
+volumes:
+  redis-data:
+  temporal-data:

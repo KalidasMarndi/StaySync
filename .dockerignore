@@ -1,0 +1,26 @@
+# Keep the build context small and free of local state/secrets.
+# The image is built from package*.json, tsconfig*.json and src/ only.
+
+node_modules
+dist
+coverage
+tests
+postman
+docs
+
+.git
+.gitignore
+.vscode
+.idea
+.claude
+.DS_Store
+*.log
+
+# Never send local environment files into the build.
+.env
+.env.*
+
+Dockerfile
+docker-compose*.yml
+.dockerignore
+README.md

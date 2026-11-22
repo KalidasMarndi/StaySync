@@ -1,0 +1,24 @@
+# Dependencies & build output
+node_modules/
+dist/
+coverage/
+
+# Environment — never commit real values; .env.example is the template
+.env
+.env.*
+!.env.example
+
+# Generated & temporary files
+*.tsbuildinfo
+.eslintcache
+tmp/
+*.pid
+
+# Logs & OS/editor files
+*.log
+.DS_Store
+.vscode/
+.idea/
+
+# Local Claude Code settings
+.claude/settings.local.json

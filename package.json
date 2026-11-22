@@ -1,0 +1,66 @@
+{
+  "name": "staysync",
+  "version": "1.0.0",
+  "description": "StaySync \u2014 Hotel Offer Orchestrator. Aggregates hotel offers from two suppliers with Temporal, dedupes them, and serves price-filtered results from Redis.",
+  "private": true,
+  "license": "UNLICENSED",
+  "main": "dist/server.js",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "tsx watch --env-file-if-exists=.env src/server.ts",
+    "dev:worker": "tsx --env-file-if-exists=.env src/temporal/worker.ts",
+    "start:worker": "node dist/temporal/worker.js",
+    "temporal:up": "docker run -d --rm --name staysync-temporal-dev -p 7233:7233 -p 8233:8233 temporalio/temporal:1.10.1 server start-dev --ip 0.0.0.0",
+    "temporal:down": "docker stop staysync-temporal-dev",
+    "redis:up": "docker run -d --rm --name staysync-redis-dev -p 6379:6379 redis:7.4-alpine",
+    "redis:down": "docker stop staysync-redis-dev",
+    "build": "tsc -p tsconfig.build.json",
+    "bundle:workflows": "node dist/temporal/bundle-workflows.js",
+    "start": "node dist/server.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:unit": "vitest run tests/unit",
+    "test:workflow": "vitest run tests/workflow",
+    "test:integration": "vitest run tests/integration",
+    "smoke": "node scripts/smoke-test.mjs",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@temporalio/activity": "1.25.0",
+    "@temporalio/client": "1.25.0",
+    "@temporalio/worker": "1.25.0",
+    "@temporalio/workflow": "1.25.0",
+    "express": "^5.3.0",
+    "ioredis": "^5.11.1",
+    "pino": "^10.4.0",
+    "pino-http": "^11.0.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@temporalio/testing": "1.25.0",
+    "@types/express": "^5.0.6",
+    "@types/node": "^24.19.2",
+    "@types/supertest": "^7.2.1",
+    "eslint": "^10.15.0",
+    "eslint-config-prettier": "^10.1.8",
+    "pino-pretty": "^13.2.0",
+    "prettier": "^3.10.1",
+    "supertest": "^7.3.2",
+    "tsx": "^4.23.15",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.73.0",
+    "vitest": "^4.1.12"
+  },
+  "allowScripts": {
+    "protobufjs": false,
+    "@swc/core": false,
+    "esbuild": false,
+    "fsevents": false
+  }
+}

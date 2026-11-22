@@ -1,0 +1,13 @@
+# Optional development override — enables the runtime supplier on/off switch
+# (PUT /dev/suppliers/:supplierId/availability) and the workflow debug endpoint.
+#
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+#
+# Never use this in production: the app refuses to start with
+# ENABLE_FAILURE_SIMULATION=true when NODE_ENV=production.
+
+services:
+  api:
+    environment:
+      NODE_ENV: development
+      ENABLE_FAILURE_SIMULATION: 'true'
