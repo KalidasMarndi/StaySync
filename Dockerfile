@@ -32,10 +32,14 @@ FROM ${NODE_IMAGE} AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
 
+# Embedded Temporal CLI for combined-process deployment (e.g. Render Web Service)
+COPY --from=temporalio/temporal:1.10.1 /usr/local/bin/temporal /usr/local/bin/temporal
+
 # Owned by root and read-only for the app user; the process never writes to /app.
 COPY --from=prod-deps /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 COPY package.json ./
+COPY scripts/start-combined.sh ./scripts/start-combined.sh
 
 # The worker loads the workflow bundle built above instead of running webpack at startup.
 ENV TEMPORAL_WORKFLOW_BUNDLE_PATH=/app/dist/workflow-bundle.js
@@ -45,5 +49,6 @@ USER node
 
 EXPOSE 4000
 
-# Exec form: node is the process that receives SIGTERM (compose adds an init via `init: true`).
-CMD ["node", "dist/server.js"]
+# Exec form: launches the combined supervisor (Temporal Server + Worker + API).
+# In docker-compose.yml, local development overrides this command for separate services.
+CMD ["./scripts/start-combined.sh"]

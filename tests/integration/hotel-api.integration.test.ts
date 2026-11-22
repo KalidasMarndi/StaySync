@@ -271,7 +271,7 @@ describe('concurrency', () => {
 describe('Redis failure on the API side', () => {
   it('unfiltered request falls back to the workflow; filtered request answers 503 safely', async () => {
     const deadRedis = createRedisClient(
-      { host: '127.0.0.1', port: 1, db: 0, password: undefined },
+      { host: '127.0.0.1', port: 1, db: 0, password: undefined, tls: false },
       'api-dead',
     );
     const brokenApp = createApp(loadConfig({ NODE_ENV: 'test' }), {

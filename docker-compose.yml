@@ -73,6 +73,7 @@ services:
     build: .
     image: staysync:latest
     init: true # tini as PID 1: forwards SIGTERM to node, reaps zombies
+    command: ['node', 'dist/server.js']
     environment: *app-environment
     ports:
       - '4000:4000'

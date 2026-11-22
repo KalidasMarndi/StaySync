@@ -12,6 +12,7 @@ export const TEST_REDIS_CONFIG: AppConfig['redis'] = {
   port: Number(process.env.REDIS_PORT ?? 6379),
   db: 15,
   password: process.env.REDIS_PASSWORD,
+  tls: false,
 };
 
 export async function connectTestRedis(name = 'test'): Promise<Redis> {

@@ -27,6 +27,7 @@ const envSchema = z
     REDIS_PORT: port.default(6379),
     REDIS_DB: z.coerce.number().int().min(0).max(15).default(0),
     REDIS_PASSWORD: z.string().min(1).optional(),
+    REDIS_TLS: booleanFromString.default(false),
 
     TEMPORAL_ADDRESS: z.string().min(1).default('localhost:7233'),
     TEMPORAL_NAMESPACE: z.string().min(1).default('default'),
@@ -71,12 +72,14 @@ const envSchema = z
 export interface AppConfig {
   nodeEnv: 'development' | 'test' | 'production';
   port: number;
-  redis: { host: string; port: number; db: number; password: string | undefined };
+  redis: { host: string; port: number; db: number; password: string | undefined; tls: boolean };
+
   temporal: {
     address: string;
     namespace: string;
     taskQueue: string;
     workflowBundlePath: string | undefined;
+    tls: boolean;
   };
   suppliers: {
     supplierA: { baseUrl: string; enabled: boolean };
@@ -113,12 +116,14 @@ export function loadConfig(source: NodeJS.ProcessEnv = process.env): AppConfig {
       port: env.REDIS_PORT,
       db: env.REDIS_DB,
       password: env.REDIS_PASSWORD,
+      tls: env.REDIS_TLS,
     },
     temporal: {
       address: env.TEMPORAL_ADDRESS,
       namespace: env.TEMPORAL_NAMESPACE,
       taskQueue: env.TEMPORAL_TASK_QUEUE,
       workflowBundlePath: env.TEMPORAL_WORKFLOW_BUNDLE_PATH,
+      tls: false,
     },
     suppliers: {
       supplierA: { baseUrl: env.SUPPLIER_A_BASE_URL, enabled: env.SUPPLIER_A_ENABLED },

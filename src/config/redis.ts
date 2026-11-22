@@ -24,6 +24,9 @@ export function createRedisClient(redisConfig: AppConfig['redis'], name: string)
     port: redisConfig.port,
     db: redisConfig.db,
     password: redisConfig.password,
+    // Upstash requires the ACL username "default" alongside the password.
+    ...(redisConfig.tls && redisConfig.password ? { username: 'default' } : {}),
+    tls: redisConfig.tls ? {} : undefined,
     connectionName: `staysync-${name}`,
     connectTimeout: 5_000,
     commandTimeout: 3_000,

@@ -7,7 +7,13 @@ describe('loadConfig', () => {
 
     expect(config.nodeEnv).toBe('development');
     expect(config.port).toBe(4000);
-    expect(config.redis).toEqual({ host: 'localhost', port: 6379, db: 0, password: undefined });
+    expect(config.redis).toEqual({
+      host: 'localhost',
+      port: 6379,
+      db: 0,
+      password: undefined,
+      tls: false,
+    });
     expect(config.temporal.taskQueue).toBe('hotel-offers');
     expect(config.temporal.workflowBundlePath).toBeUndefined(); // bundle at startup locally
     expect(config.suppliers.supplierA.enabled).toBe(true);

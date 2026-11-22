@@ -161,7 +161,7 @@ describe('GET /health with real dependencies', () => {
 
   it('Redis unavailable → redis unhealthy, degraded, still ready', async () => {
     const deadRedis = createRedisClient(
-      { host: '127.0.0.1', port: 1, db: 0, password: undefined },
+      { host: '127.0.0.1', port: 1, db: 0, password: undefined, tls: false },
       'dead',
     );
     const res = await request(healthApp({ redis: deadRedis })).get('/health');
@@ -187,7 +187,7 @@ describe('GET /health with real dependencies', () => {
 
   it('Redis AND Temporal unavailable → 503 unhealthy; ready 503; live 200', async () => {
     const deadRedis = createRedisClient(
-      { host: '127.0.0.1', port: 1, db: 0, password: undefined },
+      { host: '127.0.0.1', port: 1, db: 0, password: undefined, tls: false },
       'dead',
     );
     const app = healthApp({ redis: deadRedis, temporal: deadTemporal() });

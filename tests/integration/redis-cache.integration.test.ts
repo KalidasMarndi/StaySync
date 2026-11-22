@@ -87,7 +87,7 @@ describe('connection', () => {
 
   it('maps an unreachable Redis to DependencyUnavailableError (503) quickly', async () => {
     const dead = createRedisClient(
-      { host: '127.0.0.1', port: 1, db: 0, password: undefined },
+      { host: '127.0.0.1', port: 1, db: 0, password: undefined, tls: false },
       'dead',
     );
     const deadCache = new HotelCacheService(dead, TTL);
@@ -566,7 +566,7 @@ describe('cacheHotelOffers Temporal activity (real Redis)', () => {
 
   it('throws a RETRYABLE failure when Redis is unreachable', async () => {
     const dead = createRedisClient(
-      { host: '127.0.0.1', port: 1, db: 0, password: undefined },
+      { host: '127.0.0.1', port: 1, db: 0, password: undefined, tls: false },
       'dead',
     );
     const { cacheHotelOffers } = createCacheActivities(new HotelCacheService(dead, TTL));
