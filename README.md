@@ -1,5 +1,20 @@
 # StaySync — Hotel Offer Orchestrator
 
+### 🚀 Live Deployment
+
+| Resource              | URL                                                                                                                  |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **Live API**          | [https://staysync-ad96.onrender.com](https://staysync-ad96.onrender.com)                                             |
+| **Liveness Check**    | [https://staysync-ad96.onrender.com/health/live](https://staysync-ad96.onrender.com/health/live)                     |
+| **Full Health Check** | [https://staysync-ad96.onrender.com/health](https://staysync-ad96.onrender.com/health)                               |
+| **Hotel Offers API**  | [https://staysync-ad96.onrender.com/api/hotels?city=delhi](https://staysync-ad96.onrender.com/api/hotels?city=delhi) |
+
+> **Note on Cloud Deployment:**
+>
+> - Hosted on Render using Docker.
+> - The free instance may sleep after inactivity.
+> - The first request after sleeping can take approximately 50 seconds or more.
+
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Render-00c7b7?style=for-the-badge&logo=render&logoColor=white)](https://staysync-ad96.onrender.com)
 [![GitHub Repository](https://img.shields.io/badge/GitHub-StaySync-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/KalidasMarndi/StaySync)
 
